@@ -1,0 +1,72 @@
+# Exemplo completo: certificado de treinamento.
+# Copie esta pasta, troque o modelo.pdf e a planilha pelos seus e ajuste as coordenadas.
+
+[planilha]
+arquivo = "planilha.csv"      # .xlsx, .xlsm, .csv ou .tsv
+coluna_email = "email"
+# aba = "Participantes"       # só para Excel; sem isso usa a primeira aba
+
+[pdf]
+modelo = "modelo.pdf"
+diretorio_saida = "saida/pdfs"
+nome_arquivo = "certificado-{nome}.pdf"
+
+# Coordenadas em pontos, origem no canto INFERIOR esquerdo da página.
+# Rode `mala-direta --config exemplos/config.toml grade` para enxergar a régua sobre o modelo.
+[[pdf.campos]]
+coluna = "nome"
+pagina = 1
+x = 421          # centro de uma página A4 paisagem (842 pt de largura)
+y = 330
+fonte = "Helvetica-Bold"
+tamanho = 28
+cor = "#12263f"
+alinhamento = "centro"
+largura_maxima = 620    # reduz a fonte automaticamente em nomes longos
+
+[[pdf.campos]]
+coluna = "curso"
+pagina = 1
+x = 421
+y = 268
+fonte = "Helvetica"
+tamanho = 16
+alinhamento = "centro"
+
+[[pdf.campos]]
+coluna = "carga horaria"
+formato = "carga horária de {valor} horas"   # texto fixo ao redor do valor da planilha
+pagina = 1
+x = 421
+y = 232
+fonte = "Helvetica"
+tamanho = 13
+cor = "#44546a"
+alinhamento = "centro"
+
+[[pdf.campos]]
+coluna = "data"
+pagina = 1
+x = 421
+y = 150
+fonte = "Helvetica"
+tamanho = 11
+cor = "#44546a"
+alinhamento = "centro"
+
+# Fonte própria (opcional): o arquivo .ttf precisa estar acessível.
+# [[pdf.fontes]]
+# nome = "Inter"
+# arquivo = "fontes/Inter-Regular.ttf"
+
+[mensagem]
+assunto = "Seu certificado do treinamento {curso}"
+corpo_texto = "corpo.txt"
+corpo_html = "corpo.html"          # opcional
+remetente_nome = "AYA Academy"
+responder_para = "contato@aya.tec.br"
+nome_anexo = "Certificado - {nome}.pdf"   # opcional; sem isso usa o nome do arquivo gerado
+
+[envio]
+pausa_segundos = 2.0               # respiro entre mensagens, para não irritar o provedor
+registro = "saida/registro.csv"

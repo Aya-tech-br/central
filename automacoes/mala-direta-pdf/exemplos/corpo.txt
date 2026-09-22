@@ -1,0 +1,9 @@
+Olá, {nome}!
+
+Seu certificado de conclusão do treinamento {curso} está em anexo.
+
+Foram {carga horaria} horas de trabalho, e ficamos felizes de ter você com a gente.
+Qualquer dúvida, é só responder este e-mail.
+
+Um abraço,
+Equipe AYA

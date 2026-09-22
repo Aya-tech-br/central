@@ -1,0 +1,35 @@
+[project]
+name = "mala-direta-pdf"
+version = "0.1.0"
+description = "Gera um PDF personalizado por linha de uma planilha e envia por e-mail com o anexo correspondente."
+requires-python = ">=3.11"
+dependencies = [
+    "openpyxl>=3.1",
+    "pydantic>=2.6",
+    "pypdf>=5.0",
+    "reportlab>=4.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+
+[project.scripts]
+mala-direta = "mala_direta.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
