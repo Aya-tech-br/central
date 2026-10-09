@@ -321,6 +321,46 @@ Um alias continua **recebendo** mensagens: respostas caem na caixa da conta prin
 vez de voltar como erro. Por isso o texto do e-mail aponta um canal de contato de
 verdade em vez de prometer resposta ali.
 
+#### Configurar o provedor de API, passo a passo
+
+1. **Crie a conta** em https://resend.com e confirme o e-mail. O plano gratuito atende
+   lotes de dezenas de certificados; confira os limites atuais no painel.
+2. **Adicione o domínio** em Domains → Add Domain, informando `ayatech.co`. Escolha a
+   região de envio mais próxima (a da América do Norte é a padrão).
+3. **Publique os registros de DNS** que a tela mostrar, no painel de quem hospeda o DNS
+   do domínio. São em geral três, e cada um tem uma função:
+   - um **MX** num subdomínio de envio, por onde voltam as rejeições;
+   - um **TXT de SPF**, que autoriza o provedor a enviar em nome do domínio;
+   - um **TXT de DKIM**, a chave que assina cada mensagem.
+   Copie e cole exatamente como o painel mostra, sem reescrever. Se o seu provedor de DNS
+   já acrescenta o domínio ao final do nome, não repita o `ayatech.co`.
+4. **Espere a verificação.** Costuma levar minutos, mas o DNS pode demorar algumas horas.
+   O painel marca o domínio como verificado sozinho.
+5. **Gere a chave** em API Keys → Create API Key, com permissão apenas de envio
+   (*Sending access*). Ela aparece **uma única vez**: copie na hora. Se perder, apague a
+   chave e gere outra.
+6. **Preencha o `.env`** com a chave e o remetente, e nada mais:
+
+   ```bash
+   EMAIL_CANAL=resend
+   RESEND_API_KEY=re_...
+   EMAIL_REMETENTE=AYA Academy <no-reply@ayatech.co>
+   ```
+
+7. **Teste com você mesma** antes da turma inteira:
+
+   ```bash
+   mala-direta --config certificado-incompany/config.toml \
+     --somente seu.email@aya.tec.br enviar --confirmar
+   ```
+
+   Confira no e-mail recebido: o remetente aparece como `no-reply@ayatech.co`, o anexo
+   abre, e o nome está no lugar certo do certificado.
+
+Se o domínio ainda não estiver verificado, o envio falha com uma mensagem dizendo isso,
+em vez de sair errado. Se a conta já usa SendGrid, Mailgun ou Brevo, o canal equivalente
+são 40 linhas: a classe nova implementa o mesmo protocolo e o resto do sistema não muda.
+
 ### Valores que precisam ser preenchidos
 
 Qualquer entrada de `[valores]` cujo texto ainda comece com `PREENCHER` interrompe o lote
