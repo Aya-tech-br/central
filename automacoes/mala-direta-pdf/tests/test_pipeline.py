@@ -7,6 +7,7 @@ import pytest
 from mala_direta.config import Config
 from mala_direta.envio import EnviadorSimulado
 from mala_direta.erros import (
+    ConfiguracaoInvalidaError,
     EnvioError,
     MalaDiretaError,
     PlanilhaInvalidaError,
@@ -194,4 +195,12 @@ def test_coluna_que_nao_existe_nem_como_valor_fixo_falha(config: Config):
     config.pdf.campos[0].texto = "{turma}"
 
     with pytest.raises(PlanilhaInvalidaError, match="turma"):
+        executar(config, EnviadorSimulado())
+
+
+def test_valor_ainda_por_preencher_bloqueia_o_lote(config: Config):
+    """Um texto de exemplo esquecido na configuração não pode sair para a lista inteira."""
+    config.valores["whatsapp"] = "PREENCHER: número do WhatsApp"
+
+    with pytest.raises(ConfiguracaoInvalidaError, match="whatsapp"):
         executar(config, EnviadorSimulado())

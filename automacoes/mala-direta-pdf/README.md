@@ -203,7 +203,7 @@ passar da cota diária, ou quando a automação for rodar sem supervisão em um 
 ## Desenvolvimento
 
 ```bash
-pytest          # 85 testes, roda em menos de 1 segundo
+pytest          # 86 testes, roda em menos de 1 segundo
 ruff check .
 ruff format .
 ```
@@ -288,6 +288,29 @@ colocar no ar:
   duplicado. Em plataformas com disco efêmero, monte um volume ou baixe o registro ao fim
   de cada turma.
 - **Segredos por variável de ambiente**, nunca no repositório.
+
+### Enviar de um endereço no-reply
+
+Para o e-mail sair de `no-reply@aya.tec.br` sem gastar uma licença nova, cadastre o
+endereço como **alias** da conta que autentica (Admin Console → Usuários → Aliases de
+e-mail) e, na conta dela, em Gmail → Configurações → Contas e importação → "Enviar e-mail
+como". Sem esse segundo passo o Google reescreve silenciosamente o remetente de volta
+para a conta autenticada.
+
+```bash
+SMTP_USUARIO=conta-real@aya.tec.br     # quem autentica
+SMTP_REMETENTE=no-reply@aya.tec.br     # quem aparece como remetente
+```
+
+Um alias continua **recebendo** mensagens: respostas caem na caixa da conta principal em
+vez de voltar como erro. Por isso o texto do e-mail aponta um canal de contato de
+verdade em vez de prometer resposta ali.
+
+### Valores que precisam ser preenchidos
+
+Qualquer entrada de `[valores]` cujo texto ainda comece com `PREENCHER` interrompe o lote
+antes do primeiro envio. É a rede de proteção contra mandar trinta certificados com um
+texto de exemplo no corpo do e-mail.
 
 ## Certificado do Claude InCompany
 

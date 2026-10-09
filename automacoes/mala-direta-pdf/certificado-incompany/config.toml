@@ -86,15 +86,20 @@ largura_maxima = 80
 # arquivo = "modelos/fontes/StyreneB-Bold.ttf"
 
 [valores]
-# Preenchidos por turma, aqui ou com --valor na linha de comando.
+# Preenchidos por turma, aqui, na interface web ou com --valor na linha de comando.
 data = "09/10/2026"
 "carga horaria" = "16"
+# Canal de contato citado no e-mail, já que o remetente é um no-reply.
+# Um valor que ainda comece com PREENCHER bloqueia o envio.
+whatsapp = "PREENCHER: número ou link do WhatsApp da AYA"
 
 [mensagem]
 assunto = "Seu certificado do Claude InCompany"
 corpo_texto = "corpo.txt"
 corpo_html = "corpo.html"
 remetente_nome = "AYA Academy"
+# O endereço do remetente vem de SMTP_REMETENTE (ex.: no-reply@aya.tec.br).
+# Sem responder_para de propósito: o e-mail aponta o WhatsApp como canal.
 nome_anexo = "Certificado Claude InCompany - {Nome} {Sobrenome}.pdf"
 
 [envio]

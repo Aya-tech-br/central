@@ -13,7 +13,7 @@ from pathlib import Path
 
 from mala_direta.config import Config
 from mala_direta.envio import Anexo, EnviadorEmail, montar_mensagem
-from mala_direta.erros import MalaDiretaError
+from mala_direta.erros import ConfiguracaoInvalidaError, MalaDiretaError
 from mala_direta.pdf import PreenchedorPdf
 from mala_direta.planilha import Destinatario, chave_de_coluna, ler_destinatarios
 from mala_direta.texto import nome_de_arquivo, placeholders, preencher, validar_textos
@@ -99,6 +99,8 @@ def executar(
     """Roda o lote inteiro. Uma falha de envio não interrompe as outras linhas."""
     if not apenas_gerar and enviador is None:
         raise MalaDiretaError("Envio pedido sem um enviador configurado.")
+
+    _recusar_valores_pendentes(config.valores)
 
     destinatarios = [
         _com_valores_fixos(destinatario, config.valores)
@@ -205,6 +207,15 @@ def _processar(
     except MalaDiretaError as erro:
         return Resultado(destinatario, Status.ERRO, arquivo=arquivo, detalhe=str(erro))
     return Resultado(destinatario, Status.ENVIADO, arquivo=arquivo)
+
+
+def _recusar_valores_pendentes(valores: dict[str, str]) -> None:
+    """Impede que um texto de exemplo ainda por preencher saia para a lista inteira."""
+    pendentes = sorted(
+        nome for nome, valor in valores.items() if valor.strip().upper().startswith("PREENCHER")
+    )
+    if pendentes:
+        raise ConfiguracaoInvalidaError("Preencha antes de continuar: " + ", ".join(pendentes))
 
 
 def colunas_exigidas(config: Config) -> list[str]:
