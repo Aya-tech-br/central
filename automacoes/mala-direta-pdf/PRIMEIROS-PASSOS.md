@@ -18,6 +18,9 @@ Se aparecer menos que isso (o Mac costuma vir com 3.9), baixe o instalador em
 https://www.python.org/downloads/macos/, abra o arquivo `.pkg` e siga adiante
 clicando em continuar. Depois feche o Terminal, abra de novo e repita o comando.
 
+A versão que vem de fábrica no Mac é antiga e existe para uso interno do sistema.
+Instalar outra ao lado dela não quebra nada: as duas convivem.
+
 ## 2. Baixe o projeto
 
 ```bash
@@ -41,6 +44,7 @@ cd ~/Documents/central/automacoes/mala-direta-pdf
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -e ".[web]"
 ```
 
@@ -133,3 +137,5 @@ Os erros são escritos para serem lidos. Alguns comuns:
 | `Variáveis de ambiente ausentes` | Falta preencher o `.env` do passo 5 |
 | `Preencha antes de continuar` | Algum valor da turma ainda está com o texto de exemplo |
 | `Servidor recusou as credenciais` | A senha de app está errada ou foi gerada em outra conta |
+| `Directory cannot be installed in editable mode` | O pip está velho: rode `python -m pip install --upgrade pip` e repita a instalação |
+| `requires-python` ou `Package requires a different Python` | A caixa `.venv` foi criada com um Python antigo. Apague com `rm -rf .venv` e refaça o passo 3 usando `python3.12 -m venv .venv` |
