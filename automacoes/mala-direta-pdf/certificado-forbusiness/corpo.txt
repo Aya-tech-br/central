@@ -1,0 +1,14 @@
+Olá, {Nome}!
+
+Seu certificado de participação no Claude for Business está em anexo.
+
+Foram {carga horaria} horas de treinamento, da interface avançada à
+configuração de Skills permanentes e às integrações com as ferramentas de
+gestão do dia a dia. Obrigado por estar com a gente.
+
+Este é um endereço de envio automático e não acompanhamos respostas por aqui.
+Se precisar de qualquer coisa, inclusive correção de dados no certificado,
+fale com a gente no WhatsApp: {whatsapp}
+
+Um abraço,
+Equipe AYA

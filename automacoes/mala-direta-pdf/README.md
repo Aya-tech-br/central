@@ -23,7 +23,7 @@ Requer Python 3.11 ou superior.
 cd automacoes/mala-direta-pdf
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+uv sync --extra dev        # ou: pip install -e ".[dev]"
 ```
 
 Teste a instalação rodando o exemplo completo que acompanha o projeto:
@@ -246,7 +246,10 @@ src/mala_direta/
   cli.py         interface de linha de comando
   web/           interface web (app FastAPI, login e catálogo de modelos)
 exemplos/        projeto completo funcionando, com modelo e planilha de exemplo
-certificado-incompany/   configuração real do certificado do Claude InCompany
+certificado-incompany/   configuração do certificado do Claude InCompany
+certificado-forbusiness/ configuração do certificado do Claude for Business
+ferramentas/     utilitário que gera um PDF modelo a partir do SVG da arte
+fontes/          a fonte usada nos certificados, com sua licença
 tests/           suíte de testes
 ```
 
@@ -259,8 +262,8 @@ Para quem vai disparar os certificados sem mexer em arquivo de configuração: e
 modelo, preencher os dados da turma, conferir uma amostra e enviar, tudo pelo navegador.
 
 ```bash
-pip install -e ".[web]"
-mala-direta-web                      # abre em http://127.0.0.1:8000
+uv sync
+uv run mala-direta-web                      # abre em http://127.0.0.1:8000
 ```
 
 ### Login sem banco de dados

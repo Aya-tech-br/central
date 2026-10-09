@@ -1,17 +1,18 @@
-# Certificado de participação do Claude InCompany (AYA Academy).
+# Certificado de participação do Claude for Business (AYA Academy).
 #
 # As coordenadas abaixo foram extraídas do próprio PDF modelo: a página tem
 # 3020 x 2150 pt e os espaços em branco ficam nas posições exatas em que o
-# mockup "Fill" desenha os placeholders.
+# mockup "Fill" desenha os placeholders. O modelo vazio foi gerado a partir do
+# SVG da arte, removendo os traçados dos placeholders (ver ferramentas/).
 #
 # A data e a carga horária são iguais para a turma inteira, então ficam em
 # [valores] ou na linha de comando, e não na planilha:
 #
-#   mala-direta --config certificado-incompany/config.toml \
+#   mala-direta --config certificado-forbusiness/config.toml \
 #     --valor data=09/10/2026 --valor "carga horaria=16" enviar
 
 # Nome exibido na interface web.
-nome = "Claude InCompany"
+nome = "Claude for Business"
 
 [planilha]
 # Exportação do formulário pré-treinamento (Jotform), com as colunas Nome,
@@ -20,9 +21,9 @@ arquivo = "participantes.csv"
 coluna_email = "E-mail"
 
 [pdf]
-modelo = "modelos/Certificado_InCompany_Empty.pdf"
+modelo = "modelos/Certificado_ForBusiness_Empty.pdf"
 diretorio_saida = "saida/pdfs"
-nome_arquivo = "Certificado Claude InCompany - {Nome} {Sobrenome}.pdf"
+nome_arquivo = "Certificado Claude for Business - {Nome} {Sobrenome}.pdf"
 
 # Nome do participante, centralizado no espaço entre "Certificamos que" e
 # "participou com êxito do treinamento".
@@ -30,7 +31,7 @@ nome_arquivo = "Certificado Claude InCompany - {Nome} {Sobrenome}.pdf"
 texto = "{Nome} {Sobrenome}"
 pagina = 1
 x = 1510              # centro da página (3020 / 2)
-y = 1266
+y = 1190
 fonte = "InstrumentSans-Bold"
 tamanho = 85
 cor = "#181818"
@@ -44,7 +45,7 @@ texto = "{data}"
 dividir_por = "/"
 pedaco = 1            # dia
 x = 1721
-y = 387.5
+y = 310
 fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
@@ -54,7 +55,7 @@ texto = "{data}"
 dividir_por = "/"
 pedaco = 2            # mês
 x = 1826
-y = 387.5
+y = 310
 fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
@@ -64,7 +65,7 @@ texto = "{data}"
 dividir_por = "/"
 pedaco = 3            # ano
 x = 1931
-y = 387.5
+y = 310
 fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
@@ -73,7 +74,7 @@ cor = "#181818"
 [[pdf.campos]]
 texto = "{carga horaria}"
 x = 2423
-y = 387.5
+y = 310
 fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
@@ -95,13 +96,13 @@ data = "09/10/2026"
 whatsapp = "PREENCHER: número ou link do WhatsApp da AYA"
 
 [mensagem]
-assunto = "Seu certificado do Claude InCompany"
+assunto = "Seu certificado do Claude for Business"
 corpo_texto = "corpo.txt"
 corpo_html = "corpo.html"
 remetente_nome = "AYA Academy"
 # O endereço do remetente vem de SMTP_REMETENTE (ex.: no-reply@aya.tec.br).
 # Sem responder_para de propósito: o e-mail aponta o WhatsApp como canal.
-nome_anexo = "Certificado Claude InCompany - {Nome} {Sobrenome}.pdf"
+nome_anexo = "Certificado Claude for Business - {Nome} {Sobrenome}.pdf"
 
 [envio]
 pausa_segundos = 2.0

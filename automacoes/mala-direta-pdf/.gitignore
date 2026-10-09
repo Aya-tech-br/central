@@ -6,3 +6,4 @@ __pycache__/
 .pytest_cache/
 certificado-incompany/modelos/*.pdf
 certificado-incompany/modelos/fontes/
+certificado-forbusiness/modelos/*.pdf
