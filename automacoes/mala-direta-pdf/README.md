@@ -374,6 +374,12 @@ com as coordenadas extraídas do próprio PDF modelo (página de 3020 x 2150 pt)
 centralizado em y = 1266, data repartida nos três espaços entre as barras impressas, e
 carga horária à esquerda do rótulo "HORAS".
 
+O nome é escrito em **Instrument Sans Bold**, escolhida por comparação direta com o texto
+fixo do próprio certificado: entre as fontes livres testadas, é a que mais se aproxima no
+desenho do "C", do "a" e no espaçamento. O arquivo e a licença OFL ficam em
+`certificado-incompany/fontes/`, então não há nada a instalar. Para usar a fonte original
+da identidade, troque o `.ttf` da pasta e o nome em `[[pdf.fontes]]`.
+
 A planilha esperada é a exportação do formulário pré-treinamento, com as colunas `Nome`,
 `Sobrenome` e `E-mail`. Data e carga horária mudam por turma e entram na linha de comando:
 

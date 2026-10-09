@@ -31,7 +31,7 @@ texto = "{Nome} {Sobrenome}"
 pagina = 1
 x = 1510              # centro da página (3020 / 2)
 y = 1266
-fonte = "Helvetica-Bold"
+fonte = "InstrumentSans-Bold"
 tamanho = 85
 cor = "#181818"
 alinhamento = "centro"
@@ -45,7 +45,7 @@ dividir_por = "/"
 pedaco = 1            # dia
 x = 1721
 y = 387.5
-fonte = "Helvetica-Bold"
+fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
 
@@ -55,7 +55,7 @@ dividir_por = "/"
 pedaco = 2            # mês
 x = 1826
 y = 387.5
-fonte = "Helvetica-Bold"
+fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
 
@@ -65,7 +65,7 @@ dividir_por = "/"
 pedaco = 3            # ano
 x = 1931
 y = 387.5
-fonte = "Helvetica-Bold"
+fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
 
@@ -74,16 +74,17 @@ cor = "#181818"
 texto = "{carga horaria}"
 x = 2423
 y = 387.5
-fonte = "Helvetica-Bold"
+fonte = "InstrumentSans-Bold"
 tamanho = 50
 cor = "#181818"
 largura_maxima = 80
 
-# Fonte da identidade visual. Coloque o .ttf em modelos/fontes/ e troque
-# "Helvetica-Bold" acima pelo nome declarado aqui.
-# [[pdf.fontes]]
-# nome = "Styrene-Bold"
-# arquivo = "modelos/fontes/StyreneB-Bold.ttf"
+# Instrument Sans foi escolhida por comparação com o texto fixo do próprio
+# certificado: entre as fontes livres testadas, é a que mais se aproxima no
+# desenho do "C", do "a" e no espaçamento. Licença OFL, em fontes/.
+[[pdf.fontes]]
+nome = "InstrumentSans-Bold"
+arquivo = "fontes/InstrumentSans-Bold.ttf"
 
 [valores]
 # Preenchidos por turma, aqui, na interface web ou com --valor na linha de comando.
