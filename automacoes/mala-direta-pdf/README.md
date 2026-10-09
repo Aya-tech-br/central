@@ -16,6 +16,7 @@ desenhados por cima, em coordenadas que você define uma vez, sem mexer no layou
 
 Se você nunca rodou um projeto em Python, comece pelo
 [PRIMEIROS-PASSOS.md](PRIMEIROS-PASSOS.md), que leva do zero ao primeiro envio no Mac.
+Para retomar o projeto de onde ele parou, veja [CONTINUAR-AQUI.md](CONTINUAR-AQUI.md).
 
 Requer Python 3.11 ou superior.
 
