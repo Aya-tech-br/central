@@ -14,6 +14,9 @@ desenhados por cima, em coordenadas que você define uma vez, sem mexer no layou
 
 ## Instalação
 
+Se você nunca rodou um projeto em Python, comece pelo
+[PRIMEIROS-PASSOS.md](PRIMEIROS-PASSOS.md), que leva do zero ao primeiro envio no Mac.
+
 Requer Python 3.11 ou superior.
 
 ```bash
