@@ -78,3 +78,13 @@ def test_valor_na_linha_de_comando_substitui_coluna_ausente(projeto: Path):
 def test_valor_malformado_e_recusado(projeto: Path, capsys: pytest.CaptureFixture):
     assert executar_cli(projeto, "--valor", "turma", "gerar") == 1
     assert "COLUNA=VALOR" in capsys.readouterr().err
+
+
+def test_planilha_da_linha_de_comando_substitui_a_configurada(projeto: Path, tmp_path: Path):
+    outra = tmp_path / "teste.csv"
+    outra.write_text("nome,email,curso\nTeste,eu@exemplo.com,Claude\n", encoding="utf-8")
+
+    assert executar_cli(projeto, "--planilha", str(outra), "gerar") == 0
+
+    gerados = [arquivo.name for arquivo in (projeto / "saida" / "pdfs").glob("*.pdf")]
+    assert gerados == ["certificado-Teste.pdf"]

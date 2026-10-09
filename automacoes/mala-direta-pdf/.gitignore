@@ -7,3 +7,4 @@ __pycache__/
 certificado-incompany/modelos/*.pdf
 certificado-incompany/modelos/fontes/
 certificado-forbusiness/modelos/*.pdf
+teste*.csv

@@ -44,6 +44,12 @@ def _construir_analisador() -> argparse.ArgumentParser:
         "--env", type=Path, default=Path(".env"), help="arquivo com as credenciais SMTP"
     )
     analisador.add_argument(
+        "--planilha",
+        type=Path,
+        default=None,
+        help="usa outra planilha no lugar da configurada, útil para testes",
+    )
+    analisador.add_argument(
         "--valor",
         action="append",
         default=None,
@@ -228,6 +234,8 @@ def _carregar(opcoes: argparse.Namespace) -> Config:
     carregar_arquivo_env(opcoes.env)
     config = carregar_config(opcoes.config)
     config.valores.update(_valores_da_linha_de_comando(opcoes.valor))
+    if opcoes.planilha is not None:
+        config.planilha.arquivo = opcoes.planilha.resolve()
     return config
 
 

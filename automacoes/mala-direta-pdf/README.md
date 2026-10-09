@@ -189,6 +189,7 @@ Opções úteis em qualquer comando de lote:
 | `--reenviar` | ignora o registro e manda de novo para quem já recebeu |
 | `--config caminho` | usa outro arquivo de configuração |
 | `--valor COLUNA=VALOR` | define um valor igual para todas as linhas (repetível) |
+| `--planilha caminho` | usa outra planilha no lugar da configurada |
 
 ## Reexecução é segura
 

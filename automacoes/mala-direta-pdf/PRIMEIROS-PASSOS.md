@@ -83,9 +83,17 @@ open certificado-incompany/saida/pdfs
 
 ## 7. Mande um teste para você mesma
 
+Crie uma planilha só com você, para o disparo não depender dos nomes de exemplo:
+
+```bash
+printf 'Nome,Sobrenome,E-mail\nVeronica,Graciano,veronica@ayatech.co\n' > teste.csv
+```
+
+E envie usando ela:
+
 ```bash
 uv run mala-direta --config certificado-incompany/config.toml \
-  --somente veronica@ayatech.co enviar --confirmar
+  --planilha teste.csv enviar --confirmar
 ```
 
 No e-mail recebido, confira: o remetente aparece como `no-reply@ayatech.co`, o
