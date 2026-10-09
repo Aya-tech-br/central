@@ -33,15 +33,29 @@ mala-direta --config exemplos/config.toml conferir
 
 ### 1. Credenciais de envio
 
-Copie `.env.exemplo` para `.env` e preencha. Esse arquivo nunca vai para o Git.
+Copie `.env.exemplo` para `.env` e preencha. Esse arquivo nunca vai para o Git, e cada
+variável tem um comentário explicando o que ela é.
 
 ```bash
 cp .env.exemplo .env
 ```
 
-Para Gmail ou Google Workspace: ative a verificação em duas etapas na conta e gere uma
-senha de app em https://myaccount.google.com/apppasswords. A senha de app tem 16
-caracteres e substitui a senha normal no `.env`. A senha da sua conta não funciona no SMTP.
+Existem dois canais de envio, escolhidos pela variável `EMAIL_CANAL`:
+
+| | **API (Resend)** | **SMTP (Gmail/Workspace)** |
+| --- | --- | --- |
+| Credencial | uma chave de API | senha de app de 16 caracteres |
+| Remetente em domínio próprio | verificação por DNS no painel | exige alias + "Enviar e-mail como" |
+| Limite diário | pelo plano contratado | ~500 (grátis) ou ~2.000 (Workspace) |
+| Erros | resposta da API dizendo o motivo | código SMTP, às vezes silencioso |
+
+Prefira a **API quando o endereço do remetente for de um domínio diferente da conta que
+autentica** (um `no-reply@` em domínio próprio, por exemplo). Nesse caso o SMTP do Google
+costuma reescrever o remetente sem avisar, e a mensagem chega assinada por outra pessoa.
+Prefira **SMTP quando o envio sai da própria conta de trabalho** e o volume é pequeno:
+não precisa contratar nada.
+
+Trocar de canal depois é mudar uma linha do `.env`. Nenhum outro arquivo muda.
 
 ### 2. Planilha
 
@@ -203,7 +217,7 @@ passar da cota diária, ou quando a automação for rodar sem supervisão em um 
 ## Desenvolvimento
 
 ```bash
-pytest          # 86 testes, roda em menos de 1 segundo
+pytest          # 95 testes, roda em menos de 1 segundo
 ruff check .
 ruff format .
 ```
@@ -219,7 +233,8 @@ src/mala_direta/
   planilha.py    leitura e validação das linhas (.xlsx, .csv)
   texto.py       substituição de {placeholders} e nomes de arquivo seguros
   pdf.py         desenho dos valores sobre o modelo e a régua de coordenadas
-  envio.py       montagem da mensagem e entrega (protocolo + implementação SMTP)
+  envio.py       montagem da mensagem e o protocolo de entrega
+  canais.py      implementações de entrega (SMTP e API) e a escolha entre elas
   pipeline.py    orquestração do lote e registro de envios
   cli.py         interface de linha de comando
   web/           interface web (app FastAPI, login e catálogo de modelos)

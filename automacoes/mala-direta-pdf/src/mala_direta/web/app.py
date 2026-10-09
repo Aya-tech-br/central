@@ -20,8 +20,9 @@ from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
-from mala_direta.config import Config, carregar_credenciais_smtp
-from mala_direta.envio import EnviadorEmail, EnviadorSmtp
+from mala_direta.canais import criar_enviador as criar_enviador_do_ambiente
+from mala_direta.config import Config
+from mala_direta.envio import EnviadorEmail
 from mala_direta.erros import MalaDiretaError
 from mala_direta.pipeline import Resultado, Status, colunas_exigidas, executar
 from mala_direta.planilha import ler_destinatarios
@@ -69,7 +70,7 @@ def criar_app(
     """Monta o app. Os parâmetros existem para os testes injetarem dublês."""
     raiz = (raiz_modelos or Path.cwd()).resolve()
     autenticacao = autenticacao or carregar_autenticacao()
-    criar_enviador = criar_enviador or (lambda: EnviadorSmtp(carregar_credenciais_smtp()))
+    criar_enviador = criar_enviador or criar_enviador_do_ambiente
 
     app = FastAPI(title="Mala direta AYA", docs_url=None, redoc_url=None)
     limitador = LimitadorDeTentativas()

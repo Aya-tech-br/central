@@ -10,13 +10,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from mala_direta.config import (
-    Config,
-    carregar_arquivo_env,
-    carregar_config,
-    carregar_credenciais_smtp,
-)
-from mala_direta.envio import EnviadorEmail, EnviadorSimulado, EnviadorSmtp
+from mala_direta.canais import criar_enviador
+from mala_direta.config import Config, carregar_arquivo_env, carregar_config
+from mala_direta.envio import EnviadorEmail, EnviadorSimulado
 from mala_direta.erros import ConfiguracaoInvalidaError, MalaDiretaError
 from mala_direta.pdf import gerar_grade, inspecionar
 from mala_direta.pipeline import Resultado, Resumo, Status, colunas_exigidas, executar
@@ -222,10 +218,10 @@ def _comando_hash_senha(opcoes: argparse.Namespace) -> int:
 def _construir_enviador(simulacao: bool) -> EnviadorEmail:
     if simulacao:
         try:
-            return EnviadorSimulado(remetente=carregar_credenciais_smtp().remetente)
+            return EnviadorSimulado(remetente=criar_enviador().remetente)
         except MalaDiretaError:
             return EnviadorSimulado()
-    return EnviadorSmtp(carregar_credenciais_smtp())
+    return criar_enviador()
 
 
 def _carregar(opcoes: argparse.Namespace) -> Config:
