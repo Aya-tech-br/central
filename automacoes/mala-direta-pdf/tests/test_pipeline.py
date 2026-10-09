@@ -6,7 +6,12 @@ import pytest
 
 from mala_direta.config import Config
 from mala_direta.envio import EnviadorSimulado
-from mala_direta.erros import EnvioError, MalaDiretaError, TextoInvalidoError
+from mala_direta.erros import (
+    EnvioError,
+    MalaDiretaError,
+    PlanilhaInvalidaError,
+    TextoInvalidoError,
+)
 from mala_direta.pipeline import Status, executar
 
 
@@ -149,3 +154,44 @@ def test_texto_com_coluna_inexistente_falha_antes_de_gerar_pdf(config: Config, p
         executar(config, EnviadorSimulado())
 
     assert not list(config.pdf.diretorio_saida.glob("*.pdf"))
+
+
+def test_valores_fixos_completam_as_colunas_que_faltam(config: Config, projeto: Path):
+    """Data e carga horária são iguais para a turma, então não precisam estar na planilha."""
+    arquivo = projeto / "config.toml"
+    arquivo.write_text(
+        arquivo.read_text().replace(
+            '[[pdf.campos]]\ntexto = "{curso}"\nx = 100\ny = 360',
+            '[[pdf.campos]]\ntexto = "{data} | {carga horaria} horas"\nx = 100\ny = 360',
+        )
+        + '\n[valores]\ndata = "09/10/2026"\n"carga horaria" = "16"\n',
+        encoding="utf-8",
+    )
+    from mala_direta.config import carregar_config
+
+    atualizado = carregar_config(arquivo)
+    enviador = EnviadorSimulado()
+
+    resumo = executar(atualizado, enviador, apenas_gerar=False)
+
+    assert resumo.totais == {Status.ENVIADO: 2}
+    from pypdf import PdfReader
+
+    texto = PdfReader(atualizado.pdf.diretorio_saida / "certificado-Ana-Ribeiro.pdf").pages[0]
+    assert "09/10/2026 | 16 horas" in texto.extract_text()
+
+
+def test_planilha_tem_precedencia_sobre_valor_fixo(config: Config):
+    config.valores["curso"] = "Valor que não deve aparecer"
+    enviador = EnviadorSimulado()
+
+    executar(config, enviador)
+
+    assert enviador.enviadas[0]["Subject"] == "Certificado de Claude for Business"
+
+
+def test_coluna_que_nao_existe_nem_como_valor_fixo_falha(config: Config):
+    config.pdf.campos[0].texto = "{turma}"
+
+    with pytest.raises(PlanilhaInvalidaError, match="turma"):
+        executar(config, EnviadorSimulado())

@@ -17,9 +17,9 @@ from mala_direta.config import (
     carregar_credenciais_smtp,
 )
 from mala_direta.envio import EnviadorEmail, EnviadorSimulado, EnviadorSmtp
-from mala_direta.erros import MalaDiretaError
+from mala_direta.erros import ConfiguracaoInvalidaError, MalaDiretaError
 from mala_direta.pdf import gerar_grade, inspecionar
-from mala_direta.pipeline import Resultado, Resumo, Status, executar
+from mala_direta.pipeline import Resultado, Resumo, Status, colunas_exigidas, executar
 from mala_direta.planilha import emails_repetidos, ler_destinatarios
 
 DESCRICAO = "Gera um PDF personalizado por linha da planilha e envia por e-mail com o anexo."
@@ -46,6 +46,13 @@ def _construir_analisador() -> argparse.ArgumentParser:
     )
     analisador.add_argument(
         "--env", type=Path, default=Path(".env"), help="arquivo com as credenciais SMTP"
+    )
+    analisador.add_argument(
+        "--valor",
+        action="append",
+        default=None,
+        metavar="COLUNA=VALOR",
+        help="define um valor igual para todas as linhas, ex.: --valor data=09/10/2026",
     )
     comandos = analisador.add_subparsers(dest="comando", required=True)
 
@@ -114,9 +121,10 @@ def _comando_inspecionar(opcoes: argparse.Namespace) -> int:
         print("  campos de formulário encontrados: " + ", ".join(info.campos_de_formulario))
     print(f"\nCampos configurados: {len(config.pdf.campos)}")
     for campo in config.pdf.campos:
+        pedaco = f", pedaço {campo.pedaco} de {campo.dividir_por!r}" if campo.dividir_por else ""
         print(
-            f"  {{{campo.coluna}}} -> página {campo.pagina}, x={campo.x}, y={campo.y}, "
-            f"{campo.fonte} {campo.tamanho}pt, {campo.alinhamento}"
+            f"  {campo.texto!r} -> página {campo.pagina}, x={campo.x:g}, y={campo.y:g}, "
+            f"{campo.fonte} {campo.tamanho:g}pt, {campo.alinhamento}{pedaco}"
         )
     return 0
 
@@ -132,7 +140,7 @@ def _comando_grade(opcoes: argparse.Namespace) -> int:
 
 def _comando_conferir(opcoes: argparse.Namespace) -> int:
     config = _carregar(opcoes)
-    destinatarios = ler_destinatarios(config.planilha, config.colunas_do_pdf)
+    destinatarios = ler_destinatarios(config.planilha, colunas_exigidas(config))
 
     print(f"Planilha: {config.planilha.arquivo.name} ({len(destinatarios)} linhas válidas)")
     print(f"Colunas: {', '.join(destinatarios[0].valores)}")
@@ -200,7 +208,19 @@ def _construir_enviador(simulacao: bool) -> EnviadorEmail:
 
 def _carregar(opcoes: argparse.Namespace) -> Config:
     carregar_arquivo_env(opcoes.env)
-    return carregar_config(opcoes.config)
+    config = carregar_config(opcoes.config)
+    config.valores.update(_valores_da_linha_de_comando(opcoes.valor))
+    return config
+
+
+def _valores_da_linha_de_comando(argumentos: list[str] | None) -> dict[str, str]:
+    valores: dict[str, str] = {}
+    for argumento in argumentos or []:
+        coluna, separador, valor = argumento.partition("=")
+        if not separador or not coluna.strip():
+            raise ConfiguracaoInvalidaError(f"--valor espera COLUNA=VALOR, recebido: {argumento!r}")
+        valores[coluna.strip()] = valor
+    return valores
 
 
 def _imprimir(resultado: Resultado) -> None:

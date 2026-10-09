@@ -13,7 +13,14 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 
 from mala_direta.erros import ConfiguracaoInvalidaError
 
@@ -27,19 +34,20 @@ class Alinhamento(StrEnum):
 
 
 class Campo(BaseModel):
-    """Um valor variável posicionado sobre o PDF modelo.
+    """Um texto variável posicionado sobre o PDF modelo.
 
-    As coordenadas seguem o padrão do PDF: origem no canto inferior esquerdo da
-    página, em pontos (1 pt = 1/72 pol). O comando `grade` imprime uma régua
-    sobre o seu modelo para você ler os valores de x e y.
+    `texto` é um molde com os `{placeholders}` das colunas, então um campo pode
+    combinar colunas ("{Nome} {Sobrenome}") ou envolver o valor em texto fixo
+    ("{horas} horas"). As coordenadas seguem o padrão do PDF: origem no canto
+    inferior esquerdo da página, em pontos (1 pt = 1/72 pol). O comando `grade`
+    imprime uma régua sobre o seu modelo para você ler os valores de x e y.
     """
 
     model_config = ConfigDict(extra="forbid")
 
-    coluna: str
+    texto: str
     x: float
     y: float
-    formato: str = "{valor}"
     pagina: int = Field(default=1, ge=1)
     fonte: str = "Helvetica"
     tamanho: float = Field(default=12.0, gt=0)
@@ -47,13 +55,15 @@ class Campo(BaseModel):
     alinhamento: Alinhamento = Alinhamento.ESQUERDA
     largura_maxima: float | None = Field(default=None, gt=0)
     tamanho_minimo: float = Field(default=6.0, gt=0)
+    dividir_por: str | None = None
+    pedaco: int | None = Field(default=None, ge=1)
 
-    @field_validator("formato")
-    @classmethod
-    def _validar_formato(cls, valor: str) -> str:
-        if "{valor}" not in valor:
-            raise ValueError('formato precisa conter {valor}, ex.: "{valor} horas"')
-        return valor
+    @model_validator(mode="after")
+    def _validar_pedaco(self) -> Campo:
+        """Serve para preencher dia, mês e ano em espaços separados do modelo."""
+        if self.pedaco is not None and not self.dividir_por:
+            raise ValueError('pedaco exige dividir_por, ex.: dividir_por = "/" com pedaco = 1')
+        return self
 
     @field_validator("cor")
     @classmethod
@@ -115,10 +125,16 @@ class Config(BaseModel):
     pdf: ConfigPdf
     mensagem: ConfigMensagem
     envio: ConfigEnvio = Field(default_factory=ConfigEnvio)
+    valores: dict[str, str] = Field(default_factory=dict)
+    """Valores iguais para todas as linhas (data da turma, carga horária).
+
+    Funcionam como qualquer coluna nos moldes. A planilha tem precedência: se a
+    coluna existir lá, o valor da linha é o que vale.
+    """
 
     @property
-    def colunas_do_pdf(self) -> list[str]:
-        return [campo.coluna for campo in self.pdf.campos]
+    def moldes_do_pdf(self) -> list[str]:
+        return [campo.texto for campo in self.pdf.campos]
 
 
 def carregar_config(caminho: Path) -> Config:

@@ -62,3 +62,19 @@ def test_planilha_invalida_retorna_codigo_de_erro(projeto: Path, capsys: pytest.
 
     assert executar_cli(projeto, "gerar") == 1
     assert "linha 2" in capsys.readouterr().err
+
+
+def test_valor_na_linha_de_comando_substitui_coluna_ausente(projeto: Path):
+    arquivo = projeto / "config.toml"
+    arquivo.write_text(
+        arquivo.read_text().replace('texto = "{curso}"', 'texto = "Turma {turma}"'),
+        encoding="utf-8",
+    )
+
+    assert executar_cli(projeto, "--valor", "turma=2026/1", "gerar") == 0
+    assert len(list((projeto / "saida" / "pdfs").glob("*.pdf"))) == 2
+
+
+def test_valor_malformado_e_recusado(projeto: Path, capsys: pytest.CaptureFixture):
+    assert executar_cli(projeto, "--valor", "turma", "gerar") == 1
+    assert "COLUNA=VALOR" in capsys.readouterr().err

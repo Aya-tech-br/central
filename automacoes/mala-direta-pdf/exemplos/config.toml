@@ -14,7 +14,7 @@ nome_arquivo = "certificado-{nome}.pdf"
 # Coordenadas em pontos, origem no canto INFERIOR esquerdo da página.
 # Rode `mala-direta --config exemplos/config.toml grade` para enxergar a régua sobre o modelo.
 [[pdf.campos]]
-coluna = "nome"
+texto = "{nome}"
 pagina = 1
 x = 421          # centro de uma página A4 paisagem (842 pt de largura)
 y = 330
@@ -25,7 +25,7 @@ alinhamento = "centro"
 largura_maxima = 620    # reduz a fonte automaticamente em nomes longos
 
 [[pdf.campos]]
-coluna = "curso"
+texto = "{curso}"
 pagina = 1
 x = 421
 y = 268
@@ -34,8 +34,7 @@ tamanho = 16
 alinhamento = "centro"
 
 [[pdf.campos]]
-coluna = "carga horaria"
-formato = "carga horária de {valor} horas"   # texto fixo ao redor do valor da planilha
+texto = "carga horária de {carga horaria} horas"   # o molde aceita texto fixo e várias colunas
 pagina = 1
 x = 421
 y = 232
@@ -45,7 +44,7 @@ cor = "#44546a"
 alinhamento = "centro"
 
 [[pdf.campos]]
-coluna = "data"
+texto = "{data}"
 pagina = 1
 x = 421
 y = 150

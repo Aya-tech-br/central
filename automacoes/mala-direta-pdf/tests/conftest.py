@@ -26,13 +26,13 @@ diretorio_saida = "saida/pdfs"
 nome_arquivo = "certificado-{nome}.pdf"
 
 [[pdf.campos]]
-coluna = "nome"
+texto = "{nome}"
 x = 100
 y = 400
 tamanho = 20
 
 [[pdf.campos]]
-coluna = "curso"
+texto = "{curso}"
 x = 100
 y = 360
 

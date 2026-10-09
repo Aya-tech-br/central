@@ -1,0 +1,12 @@
+Olá, {Nome}!
+
+Seu certificado de participação no Claude InCompany está em anexo.
+
+Foram {carga horaria} horas de treinamento, da interface avançada à
+configuração de Skills permanentes e às integrações com as ferramentas de
+gestão do dia a dia. Obrigado por estar com a gente.
+
+Qualquer dúvida, é só responder este e-mail.
+
+Um abraço,
+Equipe AYA

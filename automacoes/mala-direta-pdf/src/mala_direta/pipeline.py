@@ -6,7 +6,7 @@ import csv
 import time
 from collections import Counter
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
@@ -15,8 +15,8 @@ from mala_direta.config import Config
 from mala_direta.envio import Anexo, EnviadorEmail, montar_mensagem
 from mala_direta.erros import MalaDiretaError
 from mala_direta.pdf import PreenchedorPdf
-from mala_direta.planilha import Destinatario, ler_destinatarios
-from mala_direta.texto import nome_de_arquivo, preencher, validar_textos
+from mala_direta.planilha import Destinatario, chave_de_coluna, ler_destinatarios
+from mala_direta.texto import nome_de_arquivo, placeholders, preencher, validar_textos
 
 COLUNAS_DO_REGISTRO = ("momento", "email", "linha", "arquivo", "status", "detalhe")
 
@@ -100,7 +100,10 @@ def executar(
     if not apenas_gerar and enviador is None:
         raise MalaDiretaError("Envio pedido sem um enviador configurado.")
 
-    destinatarios = ler_destinatarios(config.planilha, config.colunas_do_pdf)
+    destinatarios = [
+        _com_valores_fixos(destinatario, config.valores)
+        for destinatario in ler_destinatarios(config.planilha, colunas_exigidas(config))
+    ]
     corpo_texto = _ler_texto(config.mensagem.corpo_texto)
     corpo_html = _ler_texto(config.mensagem.corpo_html) if config.mensagem.corpo_html else None
 
@@ -111,6 +114,10 @@ def executar(
             **({"corpo HTML": corpo_html} if corpo_html else {}),
             "nome do arquivo": config.pdf.nome_arquivo,
             **({"nome do anexo": config.mensagem.nome_anexo} if config.mensagem.nome_anexo else {}),
+            **{
+                f"campo do PDF em x={campo.x:g}, y={campo.y:g}": campo.texto
+                for campo in config.pdf.campos
+            },
         },
         list(destinatarios[0].valores),
     )
@@ -198,6 +205,32 @@ def _processar(
     except MalaDiretaError as erro:
         return Resultado(destinatario, Status.ERRO, arquivo=arquivo, detalhe=str(erro))
     return Resultado(destinatario, Status.ENVIADO, arquivo=arquivo)
+
+
+def colunas_exigidas(config: Config) -> list[str]:
+    """Colunas que a planilha precisa ter: as citadas nos campos, menos as fixas."""
+    fixas = {chave_de_coluna(nome) for nome in config.valores}
+    exigidas: dict[str, str] = {}
+    for molde in config.moldes_do_pdf:
+        for coluna in sorted(placeholders(molde)):
+            chave = chave_de_coluna(coluna)
+            if chave not in fixas:
+                exigidas.setdefault(chave, coluna)
+    return list(exigidas.values())
+
+
+def _com_valores_fixos(destinatario: Destinatario, fixos: dict[str, str]) -> Destinatario:
+    """Completa a linha com os valores da turma, sem sobrescrever o que veio da planilha."""
+    if not fixos:
+        return destinatario
+
+    conhecidas = {chave_de_coluna(titulo) for titulo in destinatario.valores}
+    extras = {
+        nome: valor for nome, valor in fixos.items() if chave_de_coluna(nome) not in conhecidas
+    }
+    if not extras:
+        return destinatario
+    return replace(destinatario, valores={**destinatario.valores, **extras})
 
 
 def _selecionar(

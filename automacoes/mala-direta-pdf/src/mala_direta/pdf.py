@@ -14,8 +14,9 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 from mala_direta.config import Alinhamento, Campo, Fonte
-from mala_direta.erros import ModeloPdfInvalidoError
+from mala_direta.erros import ModeloPdfInvalidoError, PlanilhaInvalidaError
 from mala_direta.planilha import Destinatario
+from mala_direta.texto import preencher
 
 PONTOS_POR_MM = 72 / 25.4
 
@@ -125,10 +126,9 @@ def _desenhar(campos: list[Campo], destinatario: Destinatario, mediabox) -> Byte
     folha.translate(float(mediabox.left), float(mediabox.bottom))
 
     for campo in campos:
-        valor = destinatario.valor(campo.coluna)
+        valor = valor_do_campo(campo, destinatario)
         if not valor:
             continue
-        valor = campo.formato.format(valor=valor)
         tamanho = _tamanho_que_cabe(valor, campo)
         folha.setFont(campo.fonte, tamanho)
         folha.setFillColor(HexColor(campo.cor))
@@ -137,6 +137,22 @@ def _desenhar(campos: list[Campo], destinatario: Destinatario, mediabox) -> Byte
     folha.save()
     buffer.seek(0)
     return buffer
+
+
+def valor_do_campo(campo: Campo, destinatario: Destinatario) -> str:
+    """Resolve o molde do campo e, quando pedido, devolve só um pedaço do valor."""
+    valor = preencher(campo.texto, destinatario).strip()
+    if not campo.dividir_por or not valor:
+        return valor
+
+    partes = [parte.strip() for parte in valor.split(campo.dividir_por)]
+    indice = (campo.pedaco or 1) - 1
+    if indice >= len(partes):
+        raise PlanilhaInvalidaError(
+            f"Linha {destinatario.linha}: {valor!r} não tem {indice + 1} pedaço(s) "
+            f"separados por {campo.dividir_por!r}. Esperado algo como 09/10/2026."
+        )
+    return partes[indice]
 
 
 def _escrever(folha: canvas.Canvas, campo: Campo, valor: str) -> None:

@@ -1,0 +1,99 @@
+# Certificado de participação do Claude InCompany (AYA Academy).
+#
+# As coordenadas abaixo foram extraídas do próprio PDF modelo: a página tem
+# 3020 x 2150 pt e os espaços em branco ficam nas posições exatas em que o
+# mockup "Fill" desenha os placeholders.
+#
+# A data e a carga horária são iguais para a turma inteira, então ficam em
+# [valores] ou na linha de comando, e não na planilha:
+#
+#   mala-direta --config certificado-incompany/config.toml \
+#     --valor data=09/10/2026 --valor "carga horaria=16" enviar
+
+[planilha]
+# Exportação do formulário pré-treinamento (Jotform), com as colunas Nome,
+# Sobrenome e E-mail.
+arquivo = "participantes.csv"
+coluna_email = "E-mail"
+
+[pdf]
+modelo = "modelos/Certificado_InCompany_Empty.pdf"
+diretorio_saida = "saida/pdfs"
+nome_arquivo = "Certificado Claude InCompany - {Nome} {Sobrenome}.pdf"
+
+# Nome do participante, centralizado no espaço entre "Certificamos que" e
+# "participou com êxito do treinamento".
+[[pdf.campos]]
+texto = "{Nome} {Sobrenome}"
+pagina = 1
+x = 1510              # centro da página (3020 / 2)
+y = 1266
+fonte = "Helvetica-Bold"
+tamanho = 85
+cor = "#181818"
+alinhamento = "centro"
+largura_maxima = 1700   # nomes longos reduzem a fonte em vez de invadir a borda
+
+# A data vai em três espaços separados, porque as duas barras já estão
+# impressas no modelo. `dividir_por` quebra 09/10/2026 em dia, mês e ano.
+[[pdf.campos]]
+texto = "{data}"
+dividir_por = "/"
+pedaco = 1            # dia
+x = 1721
+y = 387.5
+fonte = "Helvetica-Bold"
+tamanho = 50
+cor = "#181818"
+
+[[pdf.campos]]
+texto = "{data}"
+dividir_por = "/"
+pedaco = 2            # mês
+x = 1826
+y = 387.5
+fonte = "Helvetica-Bold"
+tamanho = 50
+cor = "#181818"
+
+[[pdf.campos]]
+texto = "{data}"
+dividir_por = "/"
+pedaco = 3            # ano
+x = 1931
+y = 387.5
+fonte = "Helvetica-Bold"
+tamanho = 50
+cor = "#181818"
+
+# Carga horária: o rótulo "HORAS" já está impresso logo à direita, em x = 2513.
+[[pdf.campos]]
+texto = "{carga horaria}"
+x = 2423
+y = 387.5
+fonte = "Helvetica-Bold"
+tamanho = 50
+cor = "#181818"
+largura_maxima = 80
+
+# Fonte da identidade visual. Coloque o .ttf em modelos/fontes/ e troque
+# "Helvetica-Bold" acima pelo nome declarado aqui.
+# [[pdf.fontes]]
+# nome = "Styrene-Bold"
+# arquivo = "modelos/fontes/StyreneB-Bold.ttf"
+
+[valores]
+# Preenchidos por turma, aqui ou com --valor na linha de comando.
+data = "09/10/2026"
+"carga horaria" = "16"
+
+[mensagem]
+assunto = "Seu certificado do Claude InCompany"
+corpo_texto = "corpo.txt"
+corpo_html = "corpo.html"
+remetente_nome = "AYA Academy"
+nome_anexo = "Certificado Claude InCompany - {Nome} {Sobrenome}.pdf"
+
+[envio]
+pausa_segundos = 2.0
+registro = "saida/registro.csv"

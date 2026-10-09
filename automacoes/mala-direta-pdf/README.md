@@ -84,7 +84,7 @@ diretorio_saida = "saida/pdfs"
 nome_arquivo = "certificado-{nome}.pdf"
 
 [[pdf.campos]]
-coluna = "nome"
+texto = "{Nome} {Sobrenome}"   # molde: combina colunas e texto fixo
 x = 421
 y = 330
 fonte = "Helvetica-Bold"
@@ -94,10 +94,15 @@ alinhamento = "centro"        # esquerda, centro ou direita
 largura_maxima = 620          # opcional: diminui a fonte até o nome caber
 
 [[pdf.campos]]
-coluna = "carga horaria"
-formato = "carga horária de {valor} horas"   # opcional: texto fixo ao redor do valor
+texto = "carga horária de {carga horaria} horas"
 x = 421
 y = 232
+
+[valores]
+# Valores iguais para toda a turma, que não precisam estar na planilha.
+# A planilha tem precedência: se a coluna existir lá, o valor da linha vence.
+data = "09/10/2026"
+"carga horaria" = "16"
 
 [mensagem]
 assunto = "Seu certificado do treinamento {curso}"
@@ -112,8 +117,25 @@ pausa_segundos = 2.0
 registro = "saida/registro.csv"
 ```
 
-No assunto, no corpo e nos nomes de arquivo, `{coluna}` é trocado pelo valor daquela
-linha. Vale qualquer coluna da planilha, não só as que entram no PDF.
+No assunto, no corpo, nos campos do PDF e nos nomes de arquivo, `{coluna}` é trocado pelo
+valor daquela linha. Os títulos são tolerantes: `{Nome}`, `{nome}` e `{NOME}` encontram a
+mesma coluna.
+
+### Preencher espaços separados (dia, mês e ano)
+
+Quando o modelo já tem as barras impressas e só deixa os espaços em branco, um campo pode
+desenhar apenas um pedaço do valor:
+
+```toml
+[[pdf.campos]]
+texto = "{data}"
+dividir_por = "/"
+pedaco = 1        # 1 = dia, 2 = mês, 3 = ano em 09/10/2026
+x = 1721
+y = 387.5
+```
+
+Três blocos como esse preenchem a data inteira, cada um na sua posição.
 
 ## Uso
 
@@ -145,6 +167,7 @@ Opções úteis em qualquer comando de lote:
 | `--somente EMAIL` | restringe a um endereço (pode repetir a opção) |
 | `--reenviar` | ignora o registro e manda de novo para quem já recebeu |
 | `--config caminho` | usa outro arquivo de configuração |
+| `--valor COLUNA=VALOR` | define um valor igual para todas as linhas (repetível) |
 
 ## Reexecução é segura
 
@@ -180,7 +203,7 @@ passar da cota diária, ou quando a automação for rodar sem supervisão em um 
 ## Desenvolvimento
 
 ```bash
-pytest          # 59 testes, roda em menos de 1 segundo
+pytest          # 70 testes, roda em menos de 1 segundo
 ruff check .
 ruff format .
 ```
@@ -200,8 +223,31 @@ src/mala_direta/
   pipeline.py    orquestração do lote e registro de envios
   cli.py         interface de linha de comando
 exemplos/        projeto completo funcionando, com modelo e planilha de exemplo
+certificado-incompany/   configuração real do certificado do Claude InCompany
 tests/           suíte de testes
 ```
 
 Regra de dependência: `cli` chama `pipeline`, que compõe `planilha`, `pdf`, `texto` e
 `envio`. Nenhum desses quatro conhece os outros três nem a linha de comando.
+
+## Certificado do Claude InCompany
+
+A pasta `certificado-incompany/` já vem configurada para o certificado de participação,
+com as coordenadas extraídas do próprio PDF modelo (página de 3020 x 2150 pt): nome
+centralizado em y = 1266, data repartida nos três espaços entre as barras impressas, e
+carga horária à esquerda do rótulo "HORAS".
+
+A planilha esperada é a exportação do formulário pré-treinamento, com as colunas `Nome`,
+`Sobrenome` e `E-mail`. Data e carga horária mudam por turma e entram na linha de comando:
+
+```bash
+mala-direta --config certificado-incompany/config.toml \
+  --valor data=09/10/2026 --valor "carga horaria=16" enviar --confirmar
+```
+
+### O PDF modelo não entra no Git
+
+Este repositório é público e publica GitHub Pages. O certificado em branco contém a
+assinatura do coordenador, então versioná-lo deixaria um certificado forjável a um
+download de distância. Por isso `certificado-incompany/modelos/` está no `.gitignore`:
+o PDF fica só na máquina de quem roda a automação.

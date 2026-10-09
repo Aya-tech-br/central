@@ -11,7 +11,7 @@ def test_caminhos_relativos_resolvem_a_partir_do_arquivo(projeto: Path):
 
     assert config.pdf.modelo == projeto / "modelo.pdf"
     assert config.envio.registro == projeto / "saida" / "registro.csv"
-    assert config.colunas_do_pdf == ["nome", "curso"]
+    assert config.moldes_do_pdf == ["{nome}", "{curso}"]
 
 
 def test_config_inexistente_falha_claro(tmp_path: Path):
@@ -30,7 +30,7 @@ def test_campo_com_chave_desconhecida_e_recusado(projeto: Path):
 def test_cor_invalida_e_recusada(projeto: Path):
     arquivo = projeto / "config.toml"
     arquivo.write_text(
-        arquivo.read_text().replace('coluna = "curso"', 'coluna = "curso"\ncor = "azul"'),
+        arquivo.read_text().replace('texto = "{curso}"', 'texto = "{curso}"\ncor = "azul"'),
         encoding="utf-8",
     )
 
