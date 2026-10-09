@@ -49,11 +49,15 @@ Existem dois canais de envio, escolhidos pela variável `EMAIL_CANAL`:
 | Limite diário | pelo plano contratado | ~500 (grátis) ou ~2.000 (Workspace) |
 | Erros | resposta da API dizendo o motivo | código SMTP, às vezes silencioso |
 
-Prefira a **API quando o endereço do remetente for de um domínio diferente da conta que
-autentica** (um `no-reply@` em domínio próprio, por exemplo). Nesse caso o SMTP do Google
-costuma reescrever o remetente sem avisar, e a mensagem chega assinada por outra pessoa.
-Prefira **SMTP quando o envio sai da própria conta de trabalho** e o volume é pequeno:
-não precisa contratar nada.
+O que decide entre os dois é uma pergunta só: **a conta que autentica pode legitimamente
+assinar como o endereço do remetente?** Quando o remetente é um alias da própria conta,
+o Google aceita sem cerimônia e o SMTP resolve. Quando é o alias de outra conta, o Gmail
+exige um código de confirmação enviado àquela caixa; e quando a conta não pode gerar
+senha de app, o SMTP deixa de ser possível. Nesses dois casos, a API envia como qualquer
+endereço de um domínio verificado, sem depender de conta nenhuma.
+
+A configuração em uso hoje é a primeira: `no-reply@ayatech.co` é alias de
+`veronica@ayatech.co`, que é quem autentica.
 
 Trocar de canal depois é mudar uma linha do `.env`. Nenhum outro arquivo muda.
 
