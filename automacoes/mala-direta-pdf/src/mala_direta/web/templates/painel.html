@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block titulo %}Enviar certificados{% endblock %}
+{% block conteudo %}
+  <header>
+    <h1>Enviar certificados</h1>
+    <form class="sair" method="post" action="/sair">
+      <button type="submit">Sair ({{ usuario }})</button>
+    </form>
+  </header>
+
+  <form class="carta" method="post" action="/enviar" enctype="multipart/form-data" id="formulario">
+    <div class="campo">
+      <label for="modelo">Modelo do certificado</label>
+      <select id="modelo" name="modelo" required>
+        {% for modelo in modelos %}
+          <option value="{{ modelo.chave }}">{{ modelo.nome }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <h2>Dados da turma</h2>
+    <p class="ajuda">Valem para todos os participantes e não precisam estar na planilha.</p>
+    {% for modelo in modelos %}
+      <div class="grupo-valores" data-modelo="{{ modelo.chave }}" hidden>
+        {% for campo, atual in modelo.config.valores.items() %}
+          <div class="campo">
+            <label for="{{ modelo.chave }}-{{ loop.index }}">{{ campo }}</label>
+            <input type="text" id="{{ modelo.chave }}-{{ loop.index }}"
+                   name="valor:{{ campo }}" value="{{ atual }}" />
+          </div>
+        {% else %}
+          <p class="ajuda">Este modelo não tem campos fixos.</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <h2>Planilha de participantes</h2>
+    <p class="ajuda">Exportação do formulário em .xlsx, .xlsm, .csv ou .tsv, com uma coluna de e-mail.</p>
+    <div class="campo">
+      <input type="file" name="planilha" accept=".xlsx,.xlsm,.csv,.tsv" required />
+    </div>
+
+    <div class="botoes">
+      <button type="submit" class="secundario" formaction="/amostra" formtarget="_blank"
+              formnovalidate-confirmacao>Ver amostra do PDF</button>
+    </div>
+
+    <div class="confirmacao">
+      <input type="checkbox" id="confirmar" name="confirmar" value="sim" />
+      <label for="confirmar" style="font-weight: 400">
+        Conferi a amostra e autorizo o envio dos e-mails com o certificado em anexo.
+      </label>
+    </div>
+
+    <div class="botoes">
+      <button type="submit" id="botao-enviar" disabled>Enviar para todos</button>
+    </div>
+  </form>
+
+  <p class="ajuda">
+    Histórico de envios:
+    {% for modelo in modelos %}
+      <a href="/registro/{{ modelo.chave }}">{{ modelo.nome }}</a>{% if not loop.last %} · {% endif %}
+    {% endfor %}
+  </p>
+
+  <script>
+    const selecao = document.getElementById("modelo");
+    const grupos = document.querySelectorAll(".grupo-valores");
+    const confirmar = document.getElementById("confirmar");
+    const botaoEnviar = document.getElementById("botao-enviar");
+
+    function mostrarValoresDoModelo() {
+      grupos.forEach((grupo) => {
+        const visivel = grupo.dataset.modelo === selecao.value;
+        grupo.hidden = !visivel;
+        grupo.querySelectorAll("input").forEach((campo) => (campo.disabled = !visivel));
+      });
+    }
+
+    selecao.addEventListener("change", mostrarValoresDoModelo);
+    confirmar.addEventListener("change", () => (botaoEnviar.disabled = !confirmar.checked));
+    mostrarValoresDoModelo();
+  </script>
+{% endblock %}

@@ -203,7 +203,7 @@ passar da cota diária, ou quando a automação for rodar sem supervisão em um 
 ## Desenvolvimento
 
 ```bash
-pytest          # 70 testes, roda em menos de 1 segundo
+pytest          # 85 testes, roda em menos de 1 segundo
 ruff check .
 ruff format .
 ```
@@ -222,6 +222,7 @@ src/mala_direta/
   envio.py       montagem da mensagem e entrega (protocolo + implementação SMTP)
   pipeline.py    orquestração do lote e registro de envios
   cli.py         interface de linha de comando
+  web/           interface web (app FastAPI, login e catálogo de modelos)
 exemplos/        projeto completo funcionando, com modelo e planilha de exemplo
 certificado-incompany/   configuração real do certificado do Claude InCompany
 tests/           suíte de testes
@@ -229,6 +230,64 @@ tests/           suíte de testes
 
 Regra de dependência: `cli` chama `pipeline`, que compõe `planilha`, `pdf`, `texto` e
 `envio`. Nenhum desses quatro conhece os outros três nem a linha de comando.
+
+## Interface web
+
+Para quem vai disparar os certificados sem mexer em arquivo de configuração: escolher o
+modelo, preencher os dados da turma, conferir uma amostra e enviar, tudo pelo navegador.
+
+```bash
+pip install -e ".[web]"
+mala-direta-web                      # abre em http://127.0.0.1:8000
+```
+
+### Login sem banco de dados
+
+As senhas ficam em hash bcrypt numa variável de ambiente e a sessão vive num cookie
+assinado. Nada é gravado em banco.
+
+```bash
+mala-direta hash-senha               # digite a senha; ele imprime "usuario:$2b$12$..."
+python -c "import secrets; print(secrets.token_urlsafe(48))"   # chave da assinatura
+```
+
+No `.env`, junto das variáveis SMTP:
+
+```bash
+MALA_DIRETA_USUARIOS=veronica:$2b$12$...,breno:$2b$12$...
+MALA_DIRETA_CHAVE_SECRETA=<a chave gerada acima>
+```
+
+O cookie é `HttpOnly`, `SameSite=Lax` e ganha a marca `Secure` quando a conexão é HTTPS.
+O login tem rate limit de 5 tentativas a cada 15 minutos por origem, e usuário inexistente
+recebe exatamente a mesma resposta de senha errada, para não revelar quem existe.
+
+### Como funciona
+
+1. Escolha o modelo de certificado. A lista vem das pastas que têm um `config.toml`.
+2. Preencha os dados da turma (data, carga horária). Os campos aparecem sozinhos, a partir
+   do `[valores]` daquele modelo.
+3. Envie a planilha exportada do formulário.
+4. Clique em **Ver amostra do PDF**: o certificado da primeira linha abre numa aba nova.
+5. Marque a confirmação (o botão de envio só habilita depois dela) e envie. A tela mostra o
+   andamento linha a linha, e o histórico fica disponível para download em CSV.
+
+### Adicionar o Claude For Business
+
+Crie a pasta `certificado-forbusiness/` com o seu `config.toml` (copie o do InCompany e
+ajuste as coordenadas) e o modelo aparece na interface. Nenhuma linha de código muda.
+
+### Se for hospedar
+
+A interface roda em um processo só, porque o andamento dos envios fica em memória. Para
+colocar no ar:
+
+- **HTTPS obrigatório**, senão o cookie de sessão viaja sem a marca `Secure`.
+- **Um worker apenas** (`mala-direta-web` já sobe assim).
+- **Disco persistente** para `saida/`: é lá que fica o `registro.csv` que impede envio
+  duplicado. Em plataformas com disco efêmero, monte um volume ou baixe o registro ao fim
+  de cada turma.
+- **Segredos por variável de ambiente**, nunca no repositório.
 
 ## Certificado do Claude InCompany
 

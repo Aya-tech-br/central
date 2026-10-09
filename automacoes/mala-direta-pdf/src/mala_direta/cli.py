@@ -91,6 +91,11 @@ def _construir_analisador() -> argparse.ArgumentParser:
     )
     enviar_cmd.set_defaults(executar=_comando_enviar)
 
+    hash_cmd = comandos.add_parser(
+        "hash-senha", help="gera o hash de uma senha para a interface web"
+    )
+    hash_cmd.set_defaults(executar=_comando_hash_senha)
+
     return analisador
 
 
@@ -195,6 +200,23 @@ def _comando_enviar(opcoes: argparse.Namespace) -> int:
         enviador.fechar()
 
     return _encerrar(resumo, config)
+
+
+def _comando_hash_senha(opcoes: argparse.Namespace) -> int:
+    """A senha é digitada sem eco e nunca é gravada: só o hash sai na tela."""
+    from getpass import getpass
+
+    from mala_direta.web.seguranca import gerar_hash
+
+    senha = getpass("Senha: ")
+    if senha != getpass("Repita a senha: "):
+        raise ConfiguracaoInvalidaError("As senhas não conferem.")
+    if len(senha) < 10:
+        raise ConfiguracaoInvalidaError("Use ao menos 10 caracteres.")
+
+    print(f"\nusuario:{gerar_hash(senha)}")
+    print("Troque 'usuario' pelo login e coloque a linha em MALA_DIRETA_USUARIOS.")
+    return 0
 
 
 def _construir_enviador(simulacao: bool) -> EnviadorEmail:

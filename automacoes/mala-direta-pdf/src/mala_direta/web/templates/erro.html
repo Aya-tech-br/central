@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Erro{% endblock %}
+{% block conteudo %}
+  <header><h1>Não deu para continuar</h1></header>
+  <div class="carta">
+    <p class="aviso" style="white-space: pre-wrap">{{ mensagem }}</p>
+    <p><a href="/">Voltar</a></p>
+  </div>
+{% endblock %}

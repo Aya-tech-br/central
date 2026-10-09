@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titulo %}Envio em andamento{% endblock %}
+{% block conteudo %}
+  <header>
+    <h1>{{ tarefa.modelo }}</h1>
+    <a href="/">Novo envio</a>
+  </header>
+
+  <div class="carta">
+    <p id="resumo">Preparando {{ tarefa.total }} envio(s)...</p>
+    <div class="barra"><div id="progresso"></div></div>
+    <p class="aviso" id="falha" hidden></p>
+    <table>
+      <thead><tr><th>Destinatário</th><th>Status</th><th>Detalhe</th></tr></thead>
+      <tbody id="linhas"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const total = {{ tarefa.total }};
+    const corpo = document.getElementById("linhas");
+    const resumo = document.getElementById("resumo");
+    const progresso = document.getElementById("progresso");
+    const falha = document.getElementById("falha");
+
+    async function atualizar() {
+      const resposta = await fetch(window.location.pathname + "/estado");
+      if (!resposta.ok) return;
+      const estado = await resposta.json();
+
+      corpo.replaceChildren(
+        ...estado.linhas.map((linha) => {
+          const tr = document.createElement("tr");
+          const email = document.createElement("td");
+          email.textContent = linha.email;
+          const status = document.createElement("td");
+          status.textContent = linha.status;
+          status.className = linha.status;
+          const detalhe = document.createElement("td");
+          detalhe.textContent = linha.detalhe || "";
+          tr.append(email, status, detalhe);
+          return tr;
+        })
+      );
+
+      progresso.style.width = total ? (estado.processados / total) * 100 + "%" : "100%";
+      resumo.textContent = estado.concluida
+        ? `Concluído: ${estado.processados} de ${total}.`
+        : `Enviando... ${estado.processados} de ${total}.`;
+
+      if (estado.erro) {
+        falha.textContent = estado.erro;
+        falha.hidden = false;
+      }
+      if (!estado.concluida) setTimeout(atualizar, 1500);
+    }
+
+    atualizar();
+  </script>
+{% endblock %}

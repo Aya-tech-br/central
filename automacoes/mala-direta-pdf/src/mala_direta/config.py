@@ -121,6 +121,9 @@ class ConfigEnvio(BaseModel):
 class Config(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
+    nome: str | None = None
+    """Nome legível do modelo, usado na interface web."""
+
     planilha: ConfigPlanilha
     pdf: ConfigPdf
     mensagem: ConfigMensagem

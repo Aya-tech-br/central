@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block titulo %}Mala direta AYA{% endblock %}</title>
+    <style>
+      :root {
+        --fundo: #ece9e2;
+        --carta: #f7f5f1;
+        --tinta: #181818;
+        --suave: #6b6760;
+        --borda: #d8d3c8;
+        --destaque: #d97757;
+        --erro: #b3261e;
+        --ok: #2e7d32;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--fundo);
+        color: var(--tinta);
+        font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      }
+      main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+      header {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 16px; margin-bottom: 28px; flex-wrap: wrap;
+      }
+      h1 { font-size: 24px; margin: 0; }
+      h2 { font-size: 18px; margin: 28px 0 12px; }
+      p.ajuda { color: var(--suave); margin: 4px 0 18px; }
+      .carta {
+        background: var(--carta); border: 1px solid var(--borda);
+        border-radius: 12px; padding: 24px; margin-bottom: 20px;
+      }
+      label { display: block; font-weight: 600; margin-bottom: 6px; }
+      input[type="text"], input[type="password"], input[type="file"], select {
+        width: 100%; padding: 10px 12px; font-size: 15px;
+        border: 1px solid var(--borda); border-radius: 8px; background: #fff; color: var(--tinta);
+      }
+      .campo { margin-bottom: 18px; }
+      .botoes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+      button {
+        font: inherit; font-weight: 600; padding: 11px 18px; border-radius: 8px;
+        border: 1px solid var(--tinta); background: var(--tinta); color: #fff; cursor: pointer;
+      }
+      button.secundario { background: transparent; color: var(--tinta); }
+      button:disabled { opacity: .45; cursor: not-allowed; }
+      .confirmacao {
+        display: flex; gap: 10px; align-items: flex-start;
+        background: #fff; border: 1px solid var(--borda); border-radius: 8px;
+        padding: 12px; margin: 18px 0 4px;
+      }
+      .confirmacao input { margin-top: 4px; }
+      .aviso { border-left: 3px solid var(--erro); padding: 10px 14px; background: #fff; border-radius: 6px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15px; }
+      th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--borda); }
+      th { color: var(--suave); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+      .enviado { color: var(--ok); font-weight: 600; }
+      .erro { color: var(--erro); font-weight: 600; }
+      .pulado { color: var(--suave); }
+      .barra { height: 8px; background: var(--borda); border-radius: 99px; overflow: hidden; }
+      .barra div { height: 100%; background: var(--destaque); width: 0; transition: width .3s; }
+      a { color: var(--tinta); }
+      form.sair { margin: 0; }
+      form.sair button { background: transparent; color: var(--suave); border-color: var(--borda); }
+    </style>
+  </head>
+  <body>
+    <main>{% block conteudo %}{% endblock %}</main>
+  </body>
+</html>
